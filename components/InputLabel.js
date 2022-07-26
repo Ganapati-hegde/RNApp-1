@@ -7,7 +7,7 @@ const InputLabel = ({ inputConfigs, label, style, error }) => {
     <View style={[styles.InputLabelConatiner, style]}>
       <Text style={styles.label}>{label}</Text>
       <TextInput
-        placeholderTextColor="#ccc"
+        placeholderTextColor="#D3D3D3"
         autoCapitalize="none"
         autoCorrect={false}
         autoComplete="off"
@@ -28,22 +28,31 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   input: {
-    padding: 10,
-    borderColor: "#A7A7A7",
+    padding: 16,
+    shadowColor: "#171717",
+    shadowOffset: { width: -2, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    backgroundColor: "#fff",
+    color: "#B43E43",
+    borderColor: "#eee",
     borderWidth: 1,
     borderRadius: 6,
-    color: "#fff",
-    backgroundColor: "#F5F6F8",
+    overflow: "hidden",
+    borderWidth: 1,
+    borderRadius: 6,
   },
   multiLineInput: {
     minHeight: 100,
+    maxHeight: 100,
+    overflow: "scroll",
     textAlignVertical: "top",
   },
   inputText: {},
   label: {
     marginVertical: 8,
     fontSize: 12,
-    color: "#fff",
+    color: "#B43E43",
     fontFamily: "open-sans",
   },
 });

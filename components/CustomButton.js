@@ -1,8 +1,8 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
-const CustomButton = ({ children, style, loginButtonHandler }) => {
+const CustomButton = ({ children, style, onPress }) => {
   const onPressHandler = () => {
-    loginButtonHandler();
+    onPress();
   };
 
   return (
