@@ -5,10 +5,8 @@ import {
   ActivityIndicator,
   Pressable,
   Alert,
-  Text,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import * as Notifications from "expo-notifications";
 
 import ValidateGoalData from "../Utils/validatGoalData";
 import InputLabel from "../components/InputLabel";
@@ -57,7 +55,7 @@ const AddNewGoal = ({ navigation, route }) => {
       schedulePushNotification(
         `Goal Deleted!!`,
         `${goalParams.goalName} goal is deleted`,
-        "Goals"
+        { data: goalParams, page: "Goals" }
       );
       navigation.replace("Goals");
     } catch (error) {
@@ -79,19 +77,20 @@ const AddNewGoal = ({ navigation, route }) => {
   };
   const saveGoal = async (goalName, goalDescription, completionDate) => {
     setLoading(true);
+    const id = goalParams ? goalParams.id : "id" + new Date().getTime();
+    const goalData = {
+      id: id,
+      goalName: goalName,
+      goalDescription: goalDescription,
+      completionDate: completionDate,
+    };
     if (goalParams) {
       try {
-        await UpdateGoal(
-          goalParams.id,
-          goalName,
-          goalDescription,
-          completionDate,
-          true
-        );
+        await UpdateGoal(id, goalName, goalDescription, completionDate, true);
         schedulePushNotification(
           `Goal Editted!!`,
           `${goalName} goal is editted`,
-          "AddNewGoal"
+          { data: goalData, page: "AddNewGoal" }
         );
         navigation.replace("Goals");
       } catch (error) {
@@ -99,12 +98,12 @@ const AddNewGoal = ({ navigation, route }) => {
       }
     } else {
       try {
-        const id = "id" + new Date().getTime();
         await CreateGoal(id, goalName, goalDescription, completionDate);
+
         schedulePushNotification(
           `Goal Creted!!`,
           `${goalName} goal is created`,
-          "Goals"
+          { data: goalData, page: "Goals" }
         );
         navigation.replace("Goals");
       } catch (error) {

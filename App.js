@@ -1,6 +1,6 @@
-import { useContext } from "react";
+import { useContext, useState, useLayoutEffect } from "react";
 import { StatusBar } from "expo-status-bar";
-import AppLoading from "expo-app-loading";
+
 import { StyleSheet, Text, View, Button } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -53,6 +53,18 @@ const GoalStack = () => {
     </Stack.Navigator>
   );
 };
+const NotificationStack = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Notifications"
+        component={Notifications}
+      ></Stack.Screen>
+      <Stack.Screen name="Goals" component={Goals}></Stack.Screen>
+      <Stack.Screen name="AddNewGoal" component={AddNewGoal}></Stack.Screen>
+    </Stack.Navigator>
+  );
+};
 
 const AuthenticatedStack = () => {
   return (
@@ -77,8 +89,8 @@ const AuthenticatedStack = () => {
       ></Tab.Screen>
       <Tab.Screen
         name="Notifications"
-        component={Notifications}
-        options={getOptions("Notifications", "#fff", "#A9A9A9", "bell", true)}
+        component={NotificationStack}
+        options={getOptions("Notifications", "#fff", "#A9A9A9", "bell", false)}
       ></Tab.Screen>
     </Tab.Navigator>
   );
@@ -111,6 +123,18 @@ export const Root = () => {
 };
 
 export default function App() {
+  const [badge, setBadge] = useState(0);
+  const getNotificationBadge = async () => {
+    const badgeCount = await Notifications.getBadgeCountAsync((number) =>
+      setBadge(number)
+    );
+    console.log("badge", badgeCount);
+  };
+
+  useLayoutEffect(() => {
+    getNotificationBadge();
+  }, [Notifications]);
+
   let [fontsLoaded] = useFonts({
     "open-sans": require("./assets/fonts/OpenSans-Regular.ttf"),
     "open-sans-bold": require("./assets/fonts/OpenSans-Bold.ttf"),
@@ -119,8 +143,10 @@ export default function App() {
   if (!fontsLoaded) {
     return null;
   }
+
   return (
     <View style={styles.container}>
+      <StatusBar style="light" />
       <AuthContextProvider>
         <Root />
       </AuthContextProvider>
@@ -131,6 +157,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "red",
+    // backgroundColor: "red",
   },
 });

@@ -1,20 +1,12 @@
 import { useLayoutEffect, useContext, useEffect, useState } from "react";
-import { MaterialIcons } from "@expo/vector-icons";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  FlatList,
-  ActivityIndicator,
-} from "react-native";
+
+import { View, Text, StyleSheet, Pressable, FlatList } from "react-native";
 import { Fontisto } from "@expo/vector-icons";
 import { AuthContext } from "../Utils/Store/AuthContext";
 import PressableIcon from "../components/PressableIcon";
 import { FetchGoals } from "../Utils/requests/fetchGoals";
 import Card from "../components/Card";
 import PageLoader from "../components/PageLoader";
-import Info from "../components/Info";
 
 const Goals = ({ navigation }) => {
   const [goalList, setGoalList] = useState([]);
