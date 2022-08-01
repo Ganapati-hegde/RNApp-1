@@ -1,6 +1,6 @@
-import { useContext, useState, useLayoutEffect } from "react";
+import { useContext, useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { StyleSheet, Text, View, Button } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -15,6 +15,8 @@ import LoginForm from "./Pages/LoginForm";
 import SignUpForm from "./Pages/SignUpForm";
 import { NavigationContainer } from "@react-navigation/native";
 import AddNewGoal from "./Pages/AddNewGoal";
+import PageLoader from "./components/PageLoader";
+import AppLoading from "expo-app-loading";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -112,29 +114,37 @@ const AuthStack = () => {
   );
 };
 
-export const Root = () => {
+function Root() {
+  const [isTokenLoading, setIsTokenLoading] = useState(true);
   const authCtx = useContext(AuthContext);
+
+  useEffect(() => {
+    async function fetchToken() {
+      const storedToken = await AsyncStorage.getItem("token");
+
+      if (storedToken) {
+        authCtx.authenticate(storedToken);
+      }
+
+      setIsTokenLoading(false);
+    }
+
+    fetchToken();
+  }, []);
+
+  if (isTokenLoading) {
+    return <AppLoading />;
+  }
+
   return (
     <NavigationContainer>
-      {authCtx.isAuthenticated && <AuthenticatedStack />}
       {!authCtx.isAuthenticated && <AuthStack />}
+      {authCtx.isAuthenticated && <AuthenticatedStack />}
     </NavigationContainer>
   );
-};
+}
 
 export default function App() {
-  const [badge, setBadge] = useState(0);
-  const getNotificationBadge = async () => {
-    const badgeCount = await Notifications.getBadgeCountAsync((number) =>
-      setBadge(number)
-    );
-    console.log("badge", badgeCount);
-  };
-
-  useLayoutEffect(() => {
-    getNotificationBadge();
-  }, [Notifications]);
-
   let [fontsLoaded] = useFonts({
     "open-sans": require("./assets/fonts/OpenSans-Regular.ttf"),
     "open-sans-bold": require("./assets/fonts/OpenSans-Bold.ttf"),
@@ -147,6 +157,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
+
       <AuthContextProvider>
         <Root />
       </AuthContextProvider>
