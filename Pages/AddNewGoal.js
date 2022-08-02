@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState, useContext } from "react";
 import {
   View,
   StyleSheet,
@@ -7,7 +7,7 @@ import {
   Alert,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import ValidateGoalData from "../Utils/validatGoalData";
 import InputLabel from "../components/InputLabel";
 import { CreateGoal } from "../Utils/requests/createGoal";
@@ -15,8 +15,10 @@ import { UpdateGoal } from "../Utils/requests/updateGoal";
 import { DeleteGoal } from "../Utils/requests/deleteGoal";
 import CustomButton from "../components/CustomButton";
 import schedulePushNotification from "../NotificationsUtils/scheduleNotifications";
+import { AuthContext } from "../Utils/Store/AuthContext";
 
 const AddNewGoal = ({ navigation, route }) => {
+  const authCtx = useContext(AuthContext);
   const goalParams = route.params;
   const [loading, setLoading] = useState(false);
   const [inputValues, setInputValues] = useState({
@@ -51,11 +53,12 @@ const AddNewGoal = ({ navigation, route }) => {
   }, []);
   const deleteGoal = async () => {
     try {
-      await DeleteGoal(goalParams.id);
+      await DeleteGoal(goalParams.id, authCtx.token);
       schedulePushNotification(
         `Goal Deleted!!`,
         `${goalParams.goalName} goal is deleted`,
-        { data: goalParams, page: "Goals" }
+        { data: goalParams, page: "Goals" },
+        authCtx.token
       );
       navigation.replace("Goals");
     } catch (error) {
@@ -86,11 +89,18 @@ const AddNewGoal = ({ navigation, route }) => {
     };
     if (goalParams) {
       try {
-        await UpdateGoal(id, goalName, goalDescription, completionDate, true);
+        await UpdateGoal(
+          id,
+          goalName,
+          goalDescription,
+          completionDate,
+          authCtx.token
+        );
         schedulePushNotification(
           `Goal Editted!!`,
           `${goalName} goal is editted`,
-          { data: goalData, page: "AddNewGoal" }
+          { data: goalData, page: "AddNewGoal" },
+          authCtx.token
         );
         navigation.replace("Goals");
       } catch (error) {
@@ -98,12 +108,19 @@ const AddNewGoal = ({ navigation, route }) => {
       }
     } else {
       try {
-        await CreateGoal(id, goalName, goalDescription, completionDate);
+        await CreateGoal(
+          id,
+          goalName,
+          goalDescription,
+          completionDate,
+          authCtx.token
+        );
 
         schedulePushNotification(
           `Goal Creted!!`,
           `${goalName} goal is created`,
-          { data: goalData, page: "Goals" }
+          { data: goalData, page: "Goals" },
+          authCtx.token
         );
         navigation.replace("Goals");
       } catch (error) {
@@ -126,56 +143,63 @@ const AddNewGoal = ({ navigation, route }) => {
   };
 
   return (
-    <View style={styles.addNewGoalContainer}>
-      <InputLabel
-        style={styles.inputLabel}
-        label="Goal Name"
-        inputConfigs={{
-          placeholder: "Goal Name",
-          maxLength: 30,
-          onChangeText: (val) => {
-            onChangeTextHandler("goalName", val);
-          },
-          value: inputValues.goalName,
-        }}
-        error={errors["goalName"]}
-      />
-      <InputLabel
-        style={styles.inputLabel}
-        label="Goal Description"
-        inputConfigs={{
-          placeholder: "Goal Description",
-          multiline: true,
-          onChangeText: (val) => {
-            onChangeTextHandler("goalDescription", val);
-          },
-          value: inputValues.goalDescription,
-        }}
-        error={errors["goalDescription"]}
-      />
-      <InputLabel
-        style={styles.inputLabel}
-        label="Completion Date"
-        inputConfigs={{
-          maxLength: 10,
-          placeholder: "YYYY-MM-DD",
-          onChangeText: (val) => {
-            onChangeTextHandler("completionDate", val);
-          },
-          value: inputValues.completionDate,
-        }}
-        error={errors["completionDate"]}
-      />
-      <View style={styles.buttonContainer}>
-        {!loading ? (
-          <CustomButton onPress={onPressHandler}>
-            {goalParams ? "Edit" : "Save"}
-          </CustomButton>
-        ) : (
-          <ActivityIndicator size="small" color="#fff" />
-        )}
+    <KeyboardAwareScrollView
+      contentContainerStyle={{ flex: 1 }}
+      extraScrollHeight={100}
+      enableOnAndroid={true}
+      keyboardShouldPersistTaps="handled"
+    >
+      <View style={styles.addNewGoalContainer}>
+        <InputLabel
+          style={styles.inputLabel}
+          label="Goal Name"
+          inputConfigs={{
+            placeholder: "Goal Name",
+            maxLength: 30,
+            onChangeText: (val) => {
+              onChangeTextHandler("goalName", val);
+            },
+            value: inputValues.goalName,
+          }}
+          error={errors["goalName"]}
+        />
+        <InputLabel
+          style={styles.inputLabel}
+          label="Goal Description"
+          inputConfigs={{
+            placeholder: "Goal Description",
+            multiline: true,
+            onChangeText: (val) => {
+              onChangeTextHandler("goalDescription", val);
+            },
+            value: inputValues.goalDescription,
+          }}
+          error={errors["goalDescription"]}
+        />
+        <InputLabel
+          style={styles.inputLabel}
+          label="Completion Date"
+          inputConfigs={{
+            maxLength: 10,
+            placeholder: "YYYY-MM-DD",
+            onChangeText: (val) => {
+              onChangeTextHandler("completionDate", val);
+            },
+            value: inputValues.completionDate,
+          }}
+          error={errors["completionDate"]}
+        />
+        <View style={styles.buttonContainer}>
+          {!loading ? (
+            <CustomButton onPress={onPressHandler}>
+              {goalParams ? "Edit" : "Save"}
+            </CustomButton>
+          ) : (
+            <ActivityIndicator size="small" color="#fff" />
+          )}
+        </View>
       </View>
-    </View>
+    </KeyboardAwareScrollView>
   );
 };
 const styles = StyleSheet.create({

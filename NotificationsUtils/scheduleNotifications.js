@@ -2,10 +2,10 @@ import * as Notifications from "expo-notifications";
 import axios from "axios";
 import moment from "moment";
 
-const scheduleNotifications = async (title, body, data) => {
+const scheduleNotifications = async (title, body, data, token) => {
   try {
     const resp = await axios.post(
-      `https://rnapp-414cc-default-rtdb.firebaseio.com/notifications.json`,
+      `https://rnapp-414cc-default-rtdb.firebaseio.com/notifications.json?auth=${token}`,
       {
         title: title,
         body: body,

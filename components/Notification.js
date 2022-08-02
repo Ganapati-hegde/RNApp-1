@@ -1,9 +1,12 @@
+import { useContext } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import moment from "moment";
 import { UpdateNotification } from "../Utils/requests/UpdateNotification";
+import { AuthContext } from "../Utils/Store/AuthContext";
 
 const Notification = ({ item }) => {
+  const authCtx = useContext(AuthContext);
   const navigation = useNavigation();
   const onPressHandler = ({ item }) => {
     switch (item.data.page) {
@@ -27,7 +30,7 @@ const Notification = ({ item }) => {
   };
   const updateNotification = async (data) => {
     try {
-      await UpdateNotification(data);
+      await UpdateNotification(data, authCtx.token);
     } catch (error) {}
   };
   return (

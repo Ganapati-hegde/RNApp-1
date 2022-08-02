@@ -1,6 +1,13 @@
 import { useState, useContext } from "react";
 import { LinearGradient } from "expo-linear-gradient";
-import { View, StyleSheet, Alert } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Alert,
+  ScrollView,
+  KeyboardAvoidingView,
+} from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import AuthContent from "../components/Auth/AuthContent";
 
 import { Auth } from "../Utils/requests/createUser";
@@ -30,11 +37,22 @@ const LoginForm = () => {
     }
   };
   return (
-    <LinearGradient colors={["#B43E43", "#8C4994"]} style={{ flex: 1 }}>
-      <View style={styles.appContainer}>
-        <AuthContent isLogin onAuthenticate={onAuthenticate} loader={loader} />
-      </View>
-    </LinearGradient>
+    <KeyboardAwareScrollView
+      contentContainerStyle={{ flex: 1 }}
+      extraScrollHeight={100}
+      enableOnAndroid={true}
+      keyboardShouldPersistTaps="handled"
+    >
+      <LinearGradient colors={["#B43E43", "#8C4994"]} style={{ flex: 1 }}>
+        <View style={styles.appContainer}>
+          <AuthContent
+            isLogin
+            onAuthenticate={onAuthenticate}
+            loader={loader}
+          />
+        </View>
+      </LinearGradient>
+    </KeyboardAwareScrollView>
   );
 };
 

@@ -2,10 +2,17 @@ import {
   useEffect,
   useLayoutEffect,
   useState,
-  useMemo,
+  useContext,
   useCallback,
 } from "react";
-import { StyleSheet, Text, View, FlatList, Pressable } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  Pressable,
+  RefreshControl,
+} from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import * as Notifications from "expo-notifications";
 import { FontAwesome } from "@expo/vector-icons";
@@ -14,18 +21,22 @@ import Card from "../components/Card";
 import Notification from "../components/Notification";
 import { DeleteNotifications } from "../Utils/requests/deleteNotifications";
 import { useFocusEffect } from "@react-navigation/native";
+import { AuthContext } from "../Utils/Store/AuthContext";
 
 import PageLoader from "../components/PageLoader";
 
 const NotificationsPage = ({ navigation }) => {
   const isFocused = useIsFocused();
+  const [refreshing, setRefreshing] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [notificationsLoading, setNotificationsLoading] = useState([]);
+  const [noMoreNotifications, setNoMoreNotifications] = useState(false);
+  const authCtx = useContext(AuthContext);
 
   const onPressDelete = async () => {
     try {
       setNotificationsLoading(true);
-      await DeleteNotifications();
+      await DeleteNotifications(authCtx.token);
       setNotificationsLoading(false);
       setNotifications([]);
     } catch (error) {}
@@ -53,27 +64,33 @@ const NotificationsPage = ({ navigation }) => {
   const fetchNotifications = async () => {
     setNotificationsLoading(true);
     try {
-      const notificationsArray = await FetchNotifications();
-      setNotifications(notificationsArray);
+      const notificationsArray = await FetchNotifications(authCtx.token);
+      setNotifications(notificationsArray.reverse());
       setNotificationsLoading(false);
+      setRefreshing(false);
     } catch (error) {}
   };
 
   useEffect(() => {
-    if (isFocused) {
-      fetchNotifications();
-    }
+    fetchNotifications();
   }, []);
-  useEffect(() => {
-    // this is to call api as soon as we land on the notification page
-    const focusListener = navigation.addListener("didFocus", () => {
-      fetchNotifications();
-    });
-    return focusListener;
-  }, [navigation]);
-  const onPressHandler = (data) => {
-    navigation.navigate(data.item.data.page);
-  };
+
+  const onRefresh = useCallback(async () => {
+    let noMoreData = false;
+    setRefreshing(true);
+    try {
+      const notificationsArray = await FetchNotifications(authCtx.token);
+      setRefreshing(false);
+      if (notificationsArray.length === notifications.length) {
+        noMoreData = true;
+      }
+      setNoMoreNotifications(noMoreData);
+      setNotifications(notificationsArray.reverse());
+      setTimeout(() => {
+        setNoMoreNotifications(false);
+      }, 2000);
+    } catch (error) {}
+  }, []);
 
   const renderItem = (itemData) => {
     return <Notification item={itemData} />;
@@ -83,10 +100,18 @@ const NotificationsPage = ({ navigation }) => {
       {!notificationsLoading ? (
         notifications.length > 0 ? (
           <>
+            {noMoreNotifications && (
+              <Text style={[styles.noNotifications, styles.noMoreData]}>
+                No more notifications!!
+              </Text>
+            )}
             <FlatList
               data={notifications}
               renderItem={renderItem}
               keyExtractor={(item) => item.id}
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
             ></FlatList>
           </>
         ) : (
@@ -107,6 +132,10 @@ const styles = StyleSheet.create({
   notificationContainer: {
     flex: 1,
     // marginBottom: 16,
+  },
+  noMoreData: {
+    textAlign: "center",
+    marginVertical: 10,
   },
   emptyNotification: {
     justifyContent: "center",

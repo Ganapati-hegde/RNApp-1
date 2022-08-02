@@ -1,8 +1,8 @@
 import axios from "axios";
 
-export const FetchGoals = async () => {
+export const FetchGoals = async (token) => {
   const resp = await axios.get(
-    `https://rnapp-414cc-default-rtdb.firebaseio.com/createGoal.json`
+    `https://rnapp-414cc-default-rtdb.firebaseio.com/createGoal.json?auth=${token}`
   );
   const goals = [];
   for (const key in resp.data) {

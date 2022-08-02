@@ -16,6 +16,11 @@ const Goals = ({ navigation }) => {
     size: 70,
     color: "#B43E43",
   };
+  const iconConfigsLarge = {
+    name: "md-add-circle",
+    size: 90,
+    color: "#B43E43",
+  };
   const logoutIconConfig = {
     name: "exit-outline",
     size: 24,
@@ -44,7 +49,7 @@ const Goals = ({ navigation }) => {
     setGoalsLoading(true);
     const fetchGoals = async () => {
       try {
-        const resp = await FetchGoals();
+        const resp = await FetchGoals(authCtx.token);
         setGoalList(resp);
         setGoalsLoading(false);
       } catch (error) {}
@@ -105,12 +110,13 @@ const Goals = ({ navigation }) => {
         <View style={styles.goalData}>
           {goalList.length === 0 ? (
             <View style={styles.emptyGoal}>
-              <Fontisto
-                name="shopping-basket-add"
-                size={70}
-                color="#B43E43"
+              <PressableIcon
+                iconConfigs={iconConfigsLarge}
                 onPress={onPressHandler}
               />
+              <Text style={styles.noGoals}>
+                Start creating your goals now!!
+              </Text>
             </View>
           ) : (
             <>
@@ -178,6 +184,14 @@ const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.4,
+  },
+  noGoals: {
+    color: "#B43E43",
+    marginVertical: 5,
+    fontSize: 12,
+    fontFamily: "open-sans-bold",
+
+    textAlign: "center",
   },
 });
 export default Goals;

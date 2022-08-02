@@ -4,10 +4,11 @@ export const CreateGoal = async (
   id,
   goalName,
   goalDescription,
-  completionDate
+  completionDate,
+  token
 ) => {
   const resp = await axios.post(
-    `https://rnapp-414cc-default-rtdb.firebaseio.com/createGoal.json`,
+    `https://rnapp-414cc-default-rtdb.firebaseio.com/createGoal.json?auth=${token}`,
     {
       goalName: goalName,
       goalDescription: goalDescription,

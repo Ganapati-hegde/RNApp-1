@@ -85,12 +85,12 @@ const AuthenticatedStack = () => {
       }}
     >
       <Tab.Screen
-        name="Goals"
+        name="GoalsStack"
         component={GoalStack}
         options={getOptions("Goals", "#fff", "#A9A9A9", "target", false)}
       ></Tab.Screen>
       <Tab.Screen
-        name="Notifications"
+        name="NotificationsStack"
         component={NotificationStack}
         options={getOptions("Notifications", "#fff", "#A9A9A9", "bell", false)}
       ></Tab.Screen>
