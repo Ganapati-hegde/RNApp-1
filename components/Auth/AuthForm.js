@@ -58,7 +58,7 @@ const AuthForm = ({ submitHandler, isLogin, errors, loader }) => {
         />
         <Input
           placeholder="Password"
-          secureTextEntry
+          secureTextEntr={true}
           inputText={password}
           setInputText={updateInputValueHandler.bind(this, "password")}
           value={password}
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     flexDirection: "row",
     borderWidth: 1,
-    borderRadius: "100%",
+    borderRadius: 6,
     paddingHorizontal: 8,
     paddingVertical: 16,
     borderColor: "#FAE5E5",
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     width: 300,
     textAlign: "center",
     padding: 16,
-    borderRadius: "100%",
+    borderRadius: 6,
     marginTop: 32,
     shadowColor: "#171717",
     shadowOffset: { width: -2, height: 4 },

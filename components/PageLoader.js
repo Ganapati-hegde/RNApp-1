@@ -3,7 +3,12 @@ import { View, ActivityIndicator, StyleSheet } from "react-native";
 const PageLoader = () => {
   return (
     <View style={styles.pageLoaderContainer}>
-      <ActivityIndicator size="large" color="#B43E43" />
+      <ActivityIndicator
+        animating={true}
+        size="large"
+        style={{ opacity: 1 }}
+        color="#B43E43"
+      />
     </View>
   );
 };

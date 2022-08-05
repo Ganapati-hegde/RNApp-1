@@ -145,8 +145,8 @@ const AddNewGoal = ({ navigation, route }) => {
   return (
     <KeyboardAwareScrollView
       contentContainerStyle={{ flex: 1 }}
-      extraScrollHeight={100}
-      enableOnAndroid={true}
+      extraHeight={130}
+      extraScrollHeight={130}
       keyboardShouldPersistTaps="handled"
     >
       <View style={styles.addNewGoalContainer}>
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     width: 300,
     margin: "auto",
     height: 50,
-    borderRadius: "100%",
+    borderRadius: 6,
     marginTop: 50,
     shadowColor: "#171717",
     shadowOffset: { width: -2, height: 4 },

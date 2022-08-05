@@ -15,7 +15,7 @@ const Input = ({
     <View style={styles.textInputContainer}>
       <TextInput
         autoCapitalize="none"
-        autoComplete={false}
+        autoComplete="off"
         placeholderTextColor="#A2AAB3"
         placeholder={placeholder}
         style={styles.inputText}
